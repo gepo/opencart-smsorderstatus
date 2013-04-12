@@ -1,0 +1,337 @@
+<modification>
+    <id>Order Update SMS sending</id>
+    <version>1.0.0</version>
+    <vqmver>2.1.0</vqmver>
+    <author>Gennady Telegin, support@itxd.ru</author>
+
+    <file name="admin/model/sale/order.php">
+        <operation error="log">
+            <search position="before"><![CDATA[public function getTotalOrderHistoriesByOrderStatusId($order_status_id) {]]></search>
+            <add>
+                <![CDATA[
+                    public function getStatusName($order_status_id) {
+                        $query = $this->db->query(
+                            "SELECT name
+                            FROM order_status
+                            WHERE order_status_id = '" . (int)$order_status_id . "'
+                            AND language_id = '" . (int)$this->config->get('config_language_id') . "'
+                            LIMIT 1"
+                        );
+                        return $query->row['name'];
+                    }
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <file name="admin/language/russian/setting/setting.php">
+        <operation error="log">
+            <search position="before"><![CDATA[$_['entry_sms_gatename']]]></search>
+            <add>
+                <![CDATA[
+                    $_['entry_sms_send_new_order_status']       = 'Включить SMS уведомления при изменении статуса заказа:';
+                    $_['entry_sms_new_order_status_message']    = 'Текст сообщения при изменении статуса заказа:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{STATUS} - новый статус заказа<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента</span><br/>Для включения отправки СМС поставьте флажок напротив нужного статуса и впишите текст.';
+					
+					$_['entry_sms_send_new_order']       = 'Включить SMS уведомление клиента при новом заказе:';
+                    $_['entry_sms_new_order_message']    = 'Текст сообщения при новом заказе:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента</span>';
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <file name="admin/language/english/setting/setting.php">
+        <operation error="log">
+            <search position="before"><![CDATA[$_['entry_sms_gatename']]]></search>
+            <add>
+                <![CDATA[
+                    $_['entry_sms_send_new_order_status']       = 'Turn ON SMS notifications after order status changeed:';
+                    $_['entry_sms_new_order_status_message']    = 'SMS notifications text after order status changed:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{STATUS} - new order status</span>';
+					
+					$_['entry_sms_send_new_order']       = 'Turn ON SMS notifications of client for new order:';
+                    $_['entry_sms_new_order_message']    = 'SMS notifications text for new order:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone</span>';
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+
+    <file name="admin/controller/setting/setting.php">
+        <operation error="log">
+            <search position="before"><![CDATA[$this->data['entry_sms_gatename'] = $this->language->get('entry_sms_gatename');]]></search>
+            <add>
+                <![CDATA[
+                    $this->data['entry_sms_send_new_order_status']
+                        = $this->language->get('entry_sms_send_new_order_status');
+                    $this->data['entry_sms_new_order_status_message']
+                        = $this->language->get('entry_sms_new_order_status_message');
+						
+					$this->data['entry_sms_send_new_order']
+                        = $this->language->get('entry_sms_send_new_order');
+                    $this->data['entry_sms_new_order_message']
+                        = $this->language->get('entry_sms_new_order_message');
+						
+					$this->load->model('localisation/order_status');
+					$this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+                ]]>
+            </add>
+        </operation>
+
+        <operation error="log">
+            <search position="before"><![CDATA[if (isset($this->request->post['config_sms_alert'])) {]]></search>
+            <add>
+                <![CDATA[
+                    if (isset($this->request->post['config_sms_send_new_order_status'])) {
+                        $this->data['config_sms_send_new_order_status']
+                            = $this->request->post['config_sms_send_new_order_status'];
+                    } else {
+                        $this->data['config_sms_send_new_order_status']
+                            = $this->config->get('config_sms_send_new_order_status');
+                    }
+
+                    if (isset($this->request->post['config_sms_new_order_status_message'])) {
+                        $this->data['config_sms_new_order_status_message']
+                            = $this->request->post['config_sms_new_order_status_message'];
+                    } else {
+                        $this->data['config_sms_new_order_status_message']
+                            = (array)$this->config->get('config_sms_new_order_status_message');
+                    }
+					
+					if (isset($this->request->post['config_sms_send_new_order'])) {
+                        $this->data['config_sms_send_new_order']
+                            = $this->request->post['config_sms_send_new_order'];
+                    } else {
+                        $this->data['config_sms_send_new_order']
+                            = $this->config->get('config_sms_send_new_order');
+                    }
+					
+					if (isset($this->request->post['config_sms_new_order_message'])) {
+                        $this->data['config_sms_new_order_message']
+                            = $this->request->post['config_sms_new_order_message'];
+                    } else {
+                        $this->data['config_sms_new_order_message']
+                            = $this->config->get('config_sms_new_order_message');
+                    }
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <file name="admin/view/template/setting/setting.tpl">
+        <operation error="log">
+            <search position="after"><![CDATA[<td><textarea name="config_sms_message" cols="40" rows="5"><?php echo $config_sms_message; ?></textarea></td>]]></search>
+            <add>
+                <![CDATA[
+                    </tr>
+                    <tr>
+                      <td><?php echo $entry_sms_send_new_order; ?></td>
+                      <td><?php if ($config_sms_send_new_order) { ?>
+                        <input type="radio" name="config_sms_send_new_order" value="1" checked="checked" />
+                        <?php echo $text_yes; ?>
+                        <input type="radio" name="config_sms_send_new_order" value="0" />
+                        <?php echo $text_no; ?>
+                        <?php } else { ?>
+                        <input type="radio" name="config_sms_send_new_order" value="1" />
+                        <?php echo $text_yes; ?>
+                        <input type="radio" name="config_sms_send_new_order" value="0" checked="checked" />
+                        <?php echo $text_no; ?>
+                        <?php } ?></td>
+                    </tr>
+                    <tr>
+                      <td valign="top"><?php echo $entry_sms_new_order_message; ?></td>
+                      <td><textarea name="config_sms_new_order_message" cols="40" rows="5"><?php echo $config_sms_new_order_message; ?></textarea></td>
+                    </tr>
+					<tr>
+                      <td><?php echo $entry_sms_send_new_order_status; ?></td>
+                      <td><?php if ($config_sms_send_new_order_status) { ?>
+                        <input type="radio" name="config_sms_send_new_order_status" value="1" checked="checked" />
+                        <?php echo $text_yes; ?>
+                        <input type="radio" name="config_sms_send_new_order_status" value="0" />
+                        <?php echo $text_no; ?>
+                        <?php } else { ?>
+                        <input type="radio" name="config_sms_send_new_order_status" value="1" />
+                        <?php echo $text_yes; ?>
+                        <input type="radio" name="config_sms_send_new_order_status" value="0" checked="checked" />
+                        <?php echo $text_no; ?>
+                        <?php } ?></td>
+                    </tr>
+                    <tr>
+                      <td valign="top"><?php echo $entry_sms_new_order_status_message; ?></td>
+                      <td>
+					  
+						<table>
+						<?php foreach ($order_statuses as $order_status): ?>
+						<?php $status_message = $config_sms_new_order_status_message[$order_status['order_status_id']]; ?>
+						<tr>
+							<td>
+								<input type="checkbox" name="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][enabled]" id="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][enabled]"<?php if (isset($status_message['enabled']) && $status_message['enabled']) { echo ' checked="checked"'; }?>/>
+							<td>
+								<label for="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][enabled]"><?php echo $order_status['name']; ?></label>
+							</td>
+							<td>
+								<textarea name="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][message]" cols="40" rows="5"><?php echo isset($status_message['message']) ? $status_message['message'] : ""; ?></textarea>
+							</td>
+						</tr>
+						<?php endforeach; ?>
+						</table>
+						
+					  </td>
+                    </tr>
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+	<file name="catalog/model/checkout/order.php">
+		<operation error="log">
+            <search position="before"><![CDATA[
+				if ($this->config->get('config_sms_alert')) {
+			]]></search>
+            <add><![CDATA[
+            if ($this->config->get('config_sms_gatename')
+				AND $this->config->get('config_sms_send_new_order')
+			) {
+				$total = $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value']);
+				
+				$options = array(
+					'to'       => $order_info['telephone'],
+					'from'     => $this->config->get('config_sms_from'),
+					'username' => $this->config->get('config_sms_gate_username'),
+					'password' => $this->config->get('config_sms_gate_password'),
+					'message'  => str_replace(
+						array(
+							'{ID}',
+							'{DATE}',
+							'{TIME}',
+							'{SUM}',
+							'{PHONE}',
+							'{FIRSTNAME}',
+							'{LASTNAME}',
+						),
+						array(
+							$order_id,
+							date('d.m.Y'),
+							date('H:i'),
+							$total,
+							$order_info['telephone'],
+							$order_info['firstname'],
+							$order_info['lastname'],
+						),
+						$this->config->get('config_sms_new_order_message')
+					)
+				);
+				$this->load->library('sms');
+				$sms = new Sms($this->config->get('config_sms_gatename'), $options);
+				$sms->send();
+			}
+			]]></add>
+        </operation>
+	</file>
+	
+    <file name="admin/controller/sale/order.php">
+        <operation error="log">
+            <search position="before"><![CDATA[$this->model_sale_order->editOrder($this->request->get['order_id'], $this->request->post);]]></search>
+            <add>
+                <![CDATA[
+                    if ($this->config->get('config_sms_gatename')
+                        AND $this->config->get('config_sms_send_new_order_status')
+                    ) {
+                        $order = $this->model_sale_order->getOrder($this->request->get['order_id']);
+						$message_settings = $this->config->get('config_sms_new_order_status_message');
+						
+                        if ($order['order_status_id'] != $this->request->post['order_status_id']
+							&& isset($message_settings[$order['order_status_id']]['enabled'])
+							&& $message_settings[$order['order_status_id']]['enabled'] == 'on'
+						) {
+							
+                            $options = array(
+                                'to'       => $order['telephone'],
+                                'from'     => $this->config->get('config_sms_from'),
+                                'username' => $this->config->get('config_sms_gate_username'),
+                                'password' => $this->config->get('config_sms_gate_password'),
+                                'message'  => str_replace(
+                                    array(
+                                        '{ID}',
+                                        '{DATE}',
+                                        '{TIME}',
+                                        '{SUM}',
+                                        '{PHONE}',
+                                        '{STATUS}',
+										'{FIRSTNAME}',
+										'{LASTNAME}',
+                                    ),
+                                    array(
+                                        $this->request->get['order_id'],
+                                        date('d.m.Y'),
+                                        date('H:i'),
+                                        floatval($order['total']),
+                                        $order['telephone'],
+                                        $this->model_sale_order->getStatusName($this->request->post['order_status_id']),
+										$order['firstname'],
+										$order['lastname'],
+                                    ),
+                                    $message_settings[$order['order_status_id']]['message']
+                                )
+                            );
+                            $this->load->library('sms');
+                            $sms = new Sms($this->config->get('config_sms_gatename'), $options);
+                            $sms->send();
+                        }
+                    }
+                ]]>
+            </add>
+        </operation>
+
+        <operation error="log">
+            <search position="before"><![CDATA[$this->model_sale_order->addOrderHistory($this->request->get['order_id'], $this->request->post);]]></search>
+            <add>
+                <![CDATA[
+                    if ($this->config->get('config_sms_gatename')
+                        AND $this->config->get('config_sms_send_new_order_status')
+                        AND $this->request->post['notify']
+                    ) {
+                        $order = $this->model_sale_order->getOrder($this->request->get['order_id']);
+                        $message_settings = $this->config->get('config_sms_new_order_status_message');
+						
+                        if ($order['order_status_id'] != $this->request->post['order_status_id']
+							&& isset($message_settings[ $this->request->post['order_status_id'] ]['enabled'])
+							&& $message_settings[ $this->request->post['order_status_id'] ]['enabled'] == 'on'
+						) {
+                            $options = array(
+                                'to'       => $order['telephone'],
+                                'from'     => $this->config->get('config_sms_from'),
+                                'username' => $this->config->get('config_sms_gate_username'),
+                                'password' => $this->config->get('config_sms_gate_password'),
+                                'message'  => str_replace(
+                                    array(
+                                        '{ID}',
+                                        '{DATE}',
+                                        '{TIME}',
+                                        '{SUM}',
+                                        '{PHONE}',
+                                        '{STATUS}',
+										'{FIRSTNAME}',
+										'{LASTNAME}',
+                                    ),
+                                    array(
+                                        $this->request->get['order_id'],
+                                        date('d.m.Y'),
+                                        date('H:i'),
+                                        floatval($order['total']),
+                                        $order['telephone'],
+                                        $this->model_sale_order->getStatusName($this->request->post['order_status_id']),
+										$order['firstname'],
+										$order['lastname'],
+                                    ),
+                                    $message_settings[ $this->request->post['order_status_id'] ]['message']
+                                )
+                            );
+                            $this->load->library('sms');
+                            $sms = new Sms($this->config->get('config_sms_gatename'), $options);
+                            $sms->send();
+                        }
+                    }
+                ]]>
+            </add>
+        </operation>
+    </file>
+</modification>
