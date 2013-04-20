@@ -160,7 +160,13 @@
 					  
 						<table>
 						<?php foreach ($order_statuses as $order_status): ?>
-						<?php $status_message = $config_sms_new_order_status_message[$order_status['order_status_id']]; ?>
+						<?php 
+							if (isset($config_sms_new_order_status_message[$order_status['order_status_id']]) === true) {
+								$status_message = $config_sms_new_order_status_message[$order_status['order_status_id']];
+							} else {
+								$status_message = '';
+							}
+						?>
 						<tr>
 							<td>
 								<input type="checkbox" name="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][enabled]" id="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][enabled]"<?php if (isset($status_message['enabled']) && $status_message['enabled']) { echo ' checked="checked"'; }?>/>
