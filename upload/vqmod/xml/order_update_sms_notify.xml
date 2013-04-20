@@ -30,7 +30,7 @@
             <add>
                 <![CDATA[
                     $_['entry_sms_send_new_order_status']       = 'Включить SMS уведомления при изменении статуса заказа:';
-                    $_['entry_sms_new_order_status_message']    = 'Текст сообщения при изменении статуса заказа:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{STATUS} - новый статус заказа<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента</span><br/>Для включения отправки СМС поставьте флажок напротив нужного статуса и впишите текст.';
+                    $_['entry_sms_new_order_status_message']    = 'Текст сообщения при изменении статуса заказа:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{STATUS} - новый статус заказа<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{COMMENT} - комментарий к заказу</span><br/>Для включения отправки СМС поставьте флажок напротив нужного статуса и впишите текст.';
 					
 					$_['entry_sms_send_new_order']       = 'Включить SMS уведомление клиента при новом заказе:';
                     $_['entry_sms_new_order_message']    = 'Текст сообщения при новом заказе:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента</span>';
@@ -45,7 +45,7 @@
             <add>
                 <![CDATA[
                     $_['entry_sms_send_new_order_status']       = 'Turn ON SMS notifications after order status changeed:';
-                    $_['entry_sms_new_order_status_message']    = 'SMS notifications text after order status changed:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{STATUS} - new order status</span>';
+                    $_['entry_sms_new_order_status_message']    = 'SMS notifications text after order status changed:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{STATUS} - new order status<br/>{COMMENT} - order comment</span>';
 					
 					$_['entry_sms_send_new_order']       = 'Turn ON SMS notifications of client for new order:';
                     $_['entry_sms_new_order_message']    = 'SMS notifications text for new order:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone</span>';
@@ -258,6 +258,7 @@
                                         '{STATUS}',
 										'{FIRSTNAME}',
 										'{LASTNAME}',
+										'{COMMENT}',
                                     ),
                                     array(
                                         $this->request->get['order_id'],
@@ -268,6 +269,7 @@
                                         $this->model_sale_order->getStatusName($this->request->post['order_status_id']),
 										$order['firstname'],
 										$order['lastname'],
+										$this->request->post['comment'],
                                     ),
                                     $message_settings[$order['order_status_id']]['message']
                                 )
@@ -311,6 +313,7 @@
                                         '{STATUS}',
 										'{FIRSTNAME}',
 										'{LASTNAME}',
+										'{COMMENT}',
                                     ),
                                     array(
                                         $this->request->get['order_id'],
@@ -321,6 +324,7 @@
                                         $this->model_sale_order->getStatusName($this->request->post['order_status_id']),
 										$order['firstname'],
 										$order['lastname'],
+										$this->request->post['comment'],
                                     ),
                                     $message_settings[ $this->request->post['order_status_id'] ]['message']
                                 )
