@@ -238,8 +238,8 @@
                         $order = $this->model_sale_order->getOrder($this->request->get['order_id']);
 						$message_settings = $this->config->get('config_sms_new_order_status_message');
 						
-                        if ($order['order_status_id'] != $this->request->post['order_status_id']
-							&& isset($message_settings[$order['order_status_id']]['enabled'])
+                        if (/*$order['order_status_id'] != $this->request->post['order_status_id']
+							&&*/ isset($message_settings[$order['order_status_id']]['enabled'])
 							&& $message_settings[$order['order_status_id']]['enabled'] == 'on'
 						) {
 							
@@ -294,8 +294,8 @@
                         $order = $this->model_sale_order->getOrder($this->request->get['order_id']);
                         $message_settings = $this->config->get('config_sms_new_order_status_message');
 						
-                        if ($order['order_status_id'] != $this->request->post['order_status_id']
-							&& isset($message_settings[ $this->request->post['order_status_id'] ]['enabled'])
+                        if (/*$order['order_status_id'] != $this->request->post['order_status_id']
+							&&*/ isset($message_settings[ $this->request->post['order_status_id'] ]['enabled'])
 							&& $message_settings[ $this->request->post['order_status_id'] ]['enabled'] == 'on'
 						) {
                             $options = array(
