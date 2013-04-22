@@ -1,0 +1,139 @@
+<modification>
+    <id>SMS Test</id>
+    <version>0.1</version>
+    <vqmver>2.1.1</vqmver>
+    <author>freelancer; Gennady Telegin, support@itxd.ru</author>
+
+	<file name="admin/view/template/setting/setting.tpl">
+        <operation>
+            <search position="after"><![CDATA[
+			<div id="tab-sms">
+			]]></search>
+            <add><![CDATA[
+                <div class="testsms" style="position: absolute; right: 100px;">
+				<a id="testsms_button">Test SMS</a>
+				</div>
+				
+				<div style="display: none;">
+					<div id="testsms_form">
+						<table border="0">
+						<tr>
+							<td valign="top>
+								<label for="testsms_target">Target phone:</label>
+							</td>
+							<td>
+								<input type="input" id="testsms_target"/><br/>
+							</td>
+						</tr>
+						<tr>
+							<td valign="top">
+								<label for="testsms_message">Message:</label>
+							</td>
+							<td>
+									<textarea cols="30" rows="3" id="testsms_message"></textarea>
+							</td>
+						</tr>
+						</table>
+					</div>
+				</div>
+            ]]></add>
+        </operation>
+		
+		<operation>
+            <search position="before"><![CDATA[
+			<?php echo $footer; ?>
+			]]></search>
+            <add><![CDATA[
+               <script type="text/javascript"><!--
+				$(document).ready(function() {
+					$('#testsms_form').dialog({
+						autoOpen: false,
+						modal: true,
+						buttons: {
+							"Send": function() {
+								var params = {};
+								
+								params.config_sms_gatename      = $('select[name="config_sms_gatename"]').val();
+								params.config_sms_from          = $('input[name="config_sms_from"]').val();
+								params.config_sms_gate_api_key  = $('input[name="config_sms_gate_api_key"]').val();
+								params.config_sms_gate_username = $('input[name="config_sms_gate_username"]').val();
+								params.config_sms_gate_password = $('input[name="config_sms_gate_password"]').val();
+								
+								params.config_sms_to            = $('#testsms_target').val();
+								params.config_sms_message       = $('#testsms_message').val();
+								
+								$.ajax({
+									url: 'index.php?route=setting/setting/testsms&token=<?php echo $token; ?>',
+									data: params,
+									type: 'post',
+									dataType: 'json',
+									success: function(json) {
+										alert(JSON.stringify(json));
+									}
+								});
+								$(this).dialog("close");
+							},
+							Cancel: function() {
+								$(this).dialog("close");
+							}
+						}
+					});
+					
+					$('#testsms_button')
+						.button()
+						.click(function() {
+							$("#testsms_form").dialog("open");
+						})
+					;
+				});
+				//--></script> 
+            ]]>
+            </add>
+        </operation>
+    </file>
+	
+	<file name="admin/controller/setting/setting.php">
+		<operation>
+            <search position="before"><![CDATA[
+			public function index() {
+			]]></search>
+            <add><![CDATA[
+            public function testSMS() {
+				$json = array();
+				
+				if (isset($this->request->post['config_sms_gatename'])){
+					$options = array(
+						'to'       => trim($this->request->post['config_sms_to']),
+						'api_key' => $this->request->post['config_sms_gate_api_key'],
+						'username' => $this->request->post['config_sms_gate_username'],
+						'password' => $this->request->post['config_sms_gate_password'],
+						'message'  => $this->request->post['config_sms_message'],
+						'from'     => $this->request->post['config_sms_from'],
+					);
+
+					$this->load->library('sms');
+
+					$sms = new Sms($this->request->post['config_sms_gatename'], $options);
+					$json = $sms->send();				
+				}
+				
+				$this->response->setOutput(json_encode($json));
+			}
+            ]]>
+            </add>
+        </operation>
+	</file>
+	
+	<file name="system/library/sms.php">
+		<operation>
+            <search position="replace"><![CDATA[
+			$this->smsgate->send();
+			]]></search>
+            <add><![CDATA[
+            return $this->smsgate->send();
+            ]]>
+            </add>
+        </operation>
+	</file>
+	
+</modification>

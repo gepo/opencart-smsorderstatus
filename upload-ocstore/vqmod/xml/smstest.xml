@@ -1,0 +1,86 @@
+<modification>
+    <id>SMS Test</id>
+    <version>0.1</version>
+    <vqmver>2.1.1</vqmver>
+    <author>freelancer; Gennady Telegin, support@itxd.ru</author>
+
+	<file name="admin/view/template/setting/setting.tpl">
+        <operation>
+            <search position="after"><![CDATA[
+			<div id="tab-sms">
+			]]></search>
+            <add><![CDATA[
+                <div class="testsms" style="position: absolute; right: 100px;">
+				<a onclick="testsms(); return false">Test SMS</a>
+				</div>
+            ]]>
+            </add>
+        </operation>
+		
+		<operation>
+            <search position="before"><![CDATA[
+			<?php echo $footer; ?>
+			]]></search>
+            <add><![CDATA[
+               <script type="text/javascript"><!--
+				function testsms() {
+						$.ajax({
+							url: 'index.php?route=setting/setting/testsms&token=<?php echo $token; ?>',
+							data: $('#form [name^=config_sms_]').serialize(),
+							type: 'post',
+							dataType: 'json',
+							success: function(json) {
+								alert(JSON.stringify(json));
+							}
+						});
+				}
+				//--></script> 
+            ]]>
+            </add>
+        </operation>
+    </file>
+	
+	<file name="admin/controller/setting/setting.php">
+		<operation>
+            <search position="before"><![CDATA[
+			public function index() {
+			]]></search>
+            <add><![CDATA[
+            public function testSMS() {
+				$json = array();
+				
+				if (isset($this->request->post['config_sms_gatename'])){
+					$options = array(
+						'to'       => trim($this->request->post['config_sms_to']),
+						'username' => $this->request->post['config_sms_gate_username'],
+						'password' => $this->request->post['config_sms_gate_password'],
+						'message'  => $this->request->post['config_sms_message'],
+						'from'     => $this->request->post['config_sms_from'],
+					);
+
+					$this->load->library('sms');
+
+					$sms = new Sms($this->request->post['config_sms_gatename'], $options);
+					$json = $sms->send();				
+				}
+				
+				$this->response->setOutput(json_encode($json));
+			}
+            ]]>
+            </add>
+        </operation>
+	</file>
+	
+	<file name="system/library/sms.php">
+		<operation>
+            <search position="replace"><![CDATA[
+			$this->smsgate->send();
+			]]></search>
+            <add><![CDATA[
+            return $this->smsgate->send();
+            ]]>
+            </add>
+        </operation>
+	</file>
+	
+</modification>
