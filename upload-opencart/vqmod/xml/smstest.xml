@@ -2,7 +2,7 @@
     <id>SMS Test</id>
     <version>0.1</version>
     <vqmver>2.1.1</vqmver>
-    <author>freelancer; Gennady Telegin, support@itxd.ru</author>
+    <author>Gennady Telegin, support@itxd.ru</author>
 
 	<file name="admin/view/template/setting/setting.tpl">
         <operation>
@@ -11,15 +11,15 @@
 			]]></search>
             <add><![CDATA[
                 <div class="testsms" style="position: absolute; right: 100px;">
-				<a id="testsms_button">Test SMS</a>
+				<a id="testsms_button"><?php echo $text_testsms; ?></a>
 				</div>
 				
 				<div style="display: none;">
-					<div id="testsms_form">
+					<div id="testsms_form" title="<?php echo $text_testsms; ?>">
 						<table border="0">
 						<tr>
 							<td valign="top>
-								<label for="testsms_target">Target phone:</label>
+								<label for="testsms_target"><?php echo $text_testsms_target; ?></label>
 							</td>
 							<td>
 								<input type="input" id="testsms_target"/><br/>
@@ -27,7 +27,7 @@
 						</tr>
 						<tr>
 							<td valign="top">
-								<label for="testsms_message">Message:</label>
+								<label for="testsms_message"><?php echo $text_testsms_target; ?></label>
 							</td>
 							<td>
 									<textarea cols="30" rows="3" id="testsms_message"></textarea>
@@ -50,7 +50,7 @@
 						autoOpen: false,
 						modal: true,
 						buttons: {
-							"Send": function() {
+							"<?php echo $textsms_send_button; ?>": function() {
 								var params = {};
 								
 								params.config_sms_gatename      = $('select[name="config_sms_gatename"]').val();
@@ -73,7 +73,7 @@
 								});
 								$(this).dialog("close");
 							},
-							Cancel: function() {
+							"<?php echo $button_cancel; ?>": function() {
 								$(this).dialog("close");
 							}
 						}
@@ -122,6 +122,19 @@
             ]]>
             </add>
         </operation>
+		
+		<operation>
+            <search position="after"><![CDATA[
+			$this->data['heading_title']
+			]]></search>
+            <add><![CDATA[
+            $this->data['text_testsms'] = $this->language->get('text_testsms');
+			$this->data['text_testsms_target'] = $this->language->get('text_testsms_target');
+			$this->data['text_testsms_message'] = $this->language->get('text_testsms_message');
+			$this->data['textsms_send_button'] = $this->language->get('textsms_send_button');
+            ]]></add>
+        </operation>
+		
 	</file>
 	
 	<file name="system/library/sms.php">
@@ -131,9 +144,35 @@
 			]]></search>
             <add><![CDATA[
             return $this->smsgate->send();
-            ]]>
-            </add>
+            ]]></add>
         </operation>
 	</file>
 	
+	<file name="admin/language/english/setting/setting.php">		
+		<operation>
+            <search position="after"><![CDATA[
+			$_['heading_title']
+			]]></search>
+            <add><![CDATA[
+            $_['text_testsms']         = 'Test SMS';
+			$_['text_testsms_target']  = 'Target phone:';
+			$_['text_testsms_message'] = 'Message:';
+			$_['textsms_send_button']  = 'Send:';
+            ]]></add>
+        </operation>
+	</file>
+	
+	<file name="admin/language/russian/setting/setting.php" error="skip">		
+		<operation>
+            <search position="after"><![CDATA[
+			$_['heading_title']
+			]]></search>
+            <add><![CDATA[
+            $_['text_testsms']         = 'Тест SMS';
+			$_['text_testsms_target']  = 'Номер получателя:';
+			$_['text_testsms_message'] = 'Сообщение:';
+			$_['textsms_send_button']  = 'Отправить:';
+            ]]></add>
+        </operation>
+	</file>
 </modification>
