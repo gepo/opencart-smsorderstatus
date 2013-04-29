@@ -55,7 +55,6 @@
 								
 								params.config_sms_gatename      = $('select[name="config_sms_gatename"]').val();
 								params.config_sms_from          = $('input[name="config_sms_from"]').val();
-								params.config_sms_gate_api_key  = $('input[name="config_sms_gate_api_key"]').val();
 								params.config_sms_gate_username = $('input[name="config_sms_gate_username"]').val();
 								params.config_sms_gate_password = $('input[name="config_sms_gate_password"]').val();
 								
@@ -104,7 +103,6 @@
 				if (isset($this->request->post['config_sms_gatename'])){
 					$options = array(
 						'to'       => trim($this->request->post['config_sms_to']),
-						'api_key' => $this->request->post['config_sms_gate_api_key'],
 						'username' => $this->request->post['config_sms_gate_username'],
 						'password' => $this->request->post['config_sms_gate_password'],
 						'message'  => $this->request->post['config_sms_message'],
