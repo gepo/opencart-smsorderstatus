@@ -27,10 +27,10 @@
 						</tr>
 						<tr>
 							<td valign="top">
-								<label for="testsms_message"><?php echo $text_testsms_target; ?></label>
+								<label for="testsms_message"><?php echo $text_testsms_message; ?></label>
 							</td>
 							<td>
-									<textarea cols="30" rows="3" id="testsms_message"></textarea>
+									<textarea cols="30" rows="3" id="testsms_message">sms test</textarea>
 							</td>
 						</tr>
 						</table>
@@ -155,7 +155,7 @@
             $_['text_testsms']         = 'Test SMS';
 			$_['text_testsms_target']  = 'Target phone:';
 			$_['text_testsms_message'] = 'Message:';
-			$_['textsms_send_button']  = 'Send:';
+			$_['textsms_send_button']  = 'Send';
             ]]></add>
         </operation>
 	</file>
@@ -169,7 +169,7 @@
             $_['text_testsms']         = 'Тест SMS';
 			$_['text_testsms_target']  = 'Номер получателя:';
 			$_['text_testsms_message'] = 'Сообщение:';
-			$_['textsms_send_button']  = 'Отправить:';
+			$_['textsms_send_button']  = 'Отправить';
             ]]></add>
         </operation>
 	</file>
