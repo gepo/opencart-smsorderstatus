@@ -2,7 +2,7 @@
 final class Clickatell extends SmsGate {
 
 	public function send() {
-		$api_id = "3421941";
+		$api_id = $this->api_key;
 		
 		// auth call
 		$baseurl ="http://api.clickatell.com";
