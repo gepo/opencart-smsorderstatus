@@ -1,6 +1,7 @@
 <?php
 final class Alphasms_com_ua extends SmsGate {
-
+	private $baseurl = "http://alphasms.com.ua/api/";
+	
 	public function send() {
 		$results = array();
 
@@ -13,7 +14,7 @@ final class Alphasms_com_ua extends SmsGate {
 			'message'      => $this->message
 		);
 
-		$results[] = $this->process($data);
+		$results[] = $this->request('http.php', $data);
 
 		if ($this->copy) {
 			$numbers = explode(',', $this->copy);
@@ -26,11 +27,31 @@ final class Alphasms_com_ua extends SmsGate {
 
 		return $results;
 	}
-
-	private function process($data) {
-		$url = "http://alphasms.com.ua/api/http.php?" . http_build_query($data);
-
-		return @file_get_contents($url);
+	
+	private function request($method, $params) {
+		$url = $this->baseurl . $method;
+		
+		if (function_exists('curl_init')) {
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+			$buffer = curl_exec($ch);
+			curl_close($ch);
+		} else {
+			$context = stream_context_create(array(
+                'http' => array(
+                    'method' => 'POST',
+                    'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'content' => $params,
+                    'timeout' => 10,
+                ),
+            ));
+            $buffer = file_get_contents($url, false, $context);
+		}
+		
+		return $buffer;
 	}
 }
 ?>
