@@ -1,0 +1,117 @@
+<modification>
+    <id>SMS Test</id>
+    <version>0.1</version>
+    <vqmver>2.1.1</vqmver>
+    <author>Gennady Telegin, support@itxd.ru</author>
+
+	<file name="admin/language/english/setting/setting.php">
+		<operation>
+            <search position="after"><![CDATA[
+				$_['entry_sms_message']
+			]]></search>
+            <add><![CDATA[
+				$_['entry_sms_gate_api_key']   = 'SMS Gateway API Key:<br/><span class="help">Leave blank if it\'s not needed</span>';
+            ]]></add>
+        </operation>
+	</file>
+	
+	<file name="admin/language/russian/setting/setting.php" error="skip">
+		<operation>
+            <search position="after"><![CDATA[
+				$_['entry_sms_message']
+			]]></search>
+            <add><![CDATA[
+				$_['entry_sms_gate_api_key']   = 'API Key для SMS шлюза<br/><span class"help">Оставьте пустым, если не требуется</span>:';
+            ]]></add>
+        </operation>
+	</file>
+	
+	<file name="admin/view/template/setting/setting.tpl">
+		<operation error="skip">
+            <search position="after"><![CDATA[
+			params.config_sms_from          = $('input[name="config_sms_from"]').val();
+			]]></search>
+            <add><![CDATA[
+			params.config_sms_gate_api_key  = $('input[name="config_sms_gate_api_key"]').val();
+            ]]>
+            </add>
+        </operation>
+		
+		<operation>
+            <search position="before"><![CDATA[
+			<td><?php echo $entry_sms_gate_username; ?></td>
+			]]></search>
+            <add><![CDATA[
+			<td><?php echo $entry_sms_gate_api_key; ?></td>
+				  <td><input type="text" name="config_sms_gate_api_key" value="<?php echo $config_sms_gate_api_key; ?>" /></td>
+				</tr>
+				<tr>
+            ]]>
+            </add>
+        </operation>
+    </file>
+	
+	<file name="admin/controller/setting/setting.php">
+		<operation>
+            <search position="after"><![CDATA[
+			'to'       => trim($this->request->post['config_sms_to']),
+			]]></search>
+            <add><![CDATA[
+			'api_key' => $this->request->post['config_sms_gate_api_key'],
+            ]]>
+            </add>
+        </operation>
+		
+		<operation>
+            <search position="after"><![CDATA[
+				$this->data['entry_sms_message'] = $this->language->get('entry_sms_message');
+			]]></search>
+            <add><![CDATA[
+				$this->data['entry_sms_gate_api_key'] = $this->language->get('entry_sms_gate_api_key');
+            ]]></add>
+        </operation>
+		
+		<operation>
+            <search position="before"><![CDATA[
+				if (isset($this->request->post['config_sms_gate_username'])) {
+			]]></search>
+            <add><![CDATA[
+				if (isset($this->request->post['config_sms_gate_api_key'])) {
+					$this->data['config_sms_gate_api_key'] = $this->request->post['config_sms_gate_api_key'];
+				} else {
+					$this->data['config_sms_gate_api_key'] = $this->config->get('config_sms_gate_api_key');
+				}
+            ]]></add>
+        </operation>
+	</file>
+	
+	<file name="catalog/model/checkout/order.php">
+		<operation>
+            <search position="after"><![CDATA[
+				'from'     => $this->config->get('config_sms_from'),
+			]]></search>
+            <add><![CDATA[
+				'api_key' => $this->config->get('config_sms_gate_api_key'),
+			]]></add>
+        </operation>
+		
+		<operation>
+            <search position="after"><![CDATA[
+				'from'     => $this->config->get('config_sms_from'),
+			]]></search>
+            <add><![CDATA[
+				'api_key' => $this->config->get('config_sms_gate_api_key'),
+			]]></add>
+        </operation>
+		
+		<operation>
+            <search position="after"><![CDATA[
+				'from'     => $this->config->get('config_sms_from'),
+			]]></search>
+            <add><![CDATA[
+				'api_key' => $this->config->get('config_sms_gate_api_key'),
+			]]></add>
+        </operation>
+		
+	</file>
+</modification>
