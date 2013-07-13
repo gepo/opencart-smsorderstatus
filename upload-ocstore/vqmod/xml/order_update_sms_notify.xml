@@ -25,6 +25,11 @@
     </file>
 
     <file name="admin/language/russian/setting/setting.php">
+		<operation error="log">
+            <search position="replace"><![CDATA[{PHONE}]]></search>
+            <add><![CDATA[{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{PHONE}]]></add>
+        </operation>
+		
         <operation error="log">
             <search position="before"><![CDATA[$_['entry_sms_gatename']]]></search>
             <add>
@@ -37,10 +42,17 @@
                 ]]>
             </add>
         </operation>
+		
+		
     </file>
 
     <file name="admin/language/english/setting/setting.php">
         <operation error="log">
+            <search position="replace"><![CDATA[{PHONE}]]></search>
+            <add><![CDATA[{FIRSTNAME} - client's firstname<br/>{LASTNAME} - client's lastname<br/>{PHONE}]]></add>
+        </operation>
+		
+		<operation error="log">
             <search position="before"><![CDATA[$_['entry_sms_gatename']]]></search>
             <add>
                 <![CDATA[
@@ -52,6 +64,8 @@
                 ]]>
             </add>
         </operation>
+		
+		
     </file>
 
 
@@ -188,6 +202,23 @@
     </file>
 
 	<file name="catalog/model/checkout/order.php">
+		<operation error="log">
+            <search position="replace"><![CDATA[
+			array('{ID}', '{DATE}', '{TIME}', '{SUM}', '{PHONE}'),
+			]]></search>
+            <add><![CDATA[
+			array('{ID}', '{DATE}', '{TIME}', '{SUM}', '{PHONE}', '{FIRSTNAME}', '{LASTNAME}'), 
+			]]></add>
+        </operation>
+		<operation error="log">
+            <search position="replace"><![CDATA[
+			array($order_id, date('d.m.Y'), date('H:i'), floatval($order_info['total']), $order_info['telephone']),
+			]]></search>
+            <add><![CDATA[
+			array($order_id, date('d.m.Y'), date('H:i'), floatval($order_info['total']), $order_info['telephone'], $order_info['firstname'], $order_info['lastname']),
+			]]></add>
+        </operation>
+		
 		<operation error="log">
             <search position="before"><![CDATA[
 				if ($this->config->get('config_sms_alert')) {
