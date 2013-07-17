@@ -27,18 +27,20 @@
     <file name="admin/language/russian/setting/setting.php">
 		<operation error="log">
             <search position="replace"><![CDATA[{PHONE}]]></search>
-            <add><![CDATA[{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{PHONE}]]></add>
+            <add><![CDATA[{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{PRODUCTS} - список товаров<br/>{PHONE}]]></add>
         </operation>
 		
         <operation error="log">
-            <search position="before"><![CDATA[$_['entry_sms_gatename']]]></search>
+            <search position="before"><![CDATA[$_['error_warning']]]></search>
             <add>
                 <![CDATA[
                     $_['entry_sms_send_new_order_status']       = 'Включить SMS уведомления при изменении статуса заказа:';
-                    $_['entry_sms_new_order_status_message']    = 'Текст сообщения при изменении статуса заказа:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{STATUS} - новый статус заказа<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{COMMENT} - комментарий к заказу</span><br/>Для включения отправки СМС поставьте флажок напротив нужного статуса и впишите текст.';
+                    $_['entry_sms_new_order_status_message']    = 'Текст сообщения при изменении статуса заказа:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{STATUS} - новый статус заказа<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{COMMENT} - комментарий к заказу<br/>{PRODUCTS} - список товаров</span><br/>Для включения отправки СМС поставьте флажок напротив нужного статуса и впишите текст.';
 					
 					$_['entry_sms_send_new_order']       = 'Включить SMS уведомление клиента при новом заказе:';
-                    $_['entry_sms_new_order_message']    = 'Текст сообщения при новом заказе:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента</span>';
+                    $_['entry_sms_new_order_message']    = 'Текст сообщения при новом заказе:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{PRODUCTS} - список товаров</span>';
+					
+					$_['entry_sms_alert']          = 'Включить SMS уведомления администратора:';
                 ]]>
             </add>
         </operation>
@@ -49,7 +51,7 @@
     <file name="admin/language/english/setting/setting.php">
         <operation error="log">
             <search position="replace"><![CDATA[{PHONE}]]></search>
-            <add><![CDATA[{FIRSTNAME} - client's firstname<br/>{LASTNAME} - client's lastname<br/>{PHONE}]]></add>
+            <add><![CDATA[{FIRSTNAME} - client's firstname<br/>{LASTNAME} - client's lastname<br/>{PRODUCTS} - order products list<br/>{PHONE}]]></add>
         </operation>
 		
 		<operation error="log">
@@ -57,17 +59,14 @@
             <add>
                 <![CDATA[
                     $_['entry_sms_send_new_order_status']       = 'Turn ON SMS notifications after order status changeed:';
-                    $_['entry_sms_new_order_status_message']    = 'SMS notifications text after order status changed:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{STATUS} - new order status<br/>{COMMENT} - order comment</span>';
+                    $_['entry_sms_new_order_status_message']    = 'SMS notifications text after order status changed:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{STATUS} - new order status<br/>{COMMENT} - order comment<br/>{PRODUCTS} - order products list</span>';
 					
 					$_['entry_sms_send_new_order']       = 'Turn ON SMS notifications of client for new order:';
-                    $_['entry_sms_new_order_message']    = 'SMS notifications text for new order:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone</span>';
+                    $_['entry_sms_new_order_message']    = 'SMS notifications text for new order:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{PRODUCTS} - order products list</span>';
                 ]]>
             </add>
         </operation>
-		
-		
     </file>
-
 
     <file name="admin/controller/setting/setting.php">
         <operation error="log">
@@ -207,7 +206,7 @@
 			array('{ID}', '{DATE}', '{TIME}', '{SUM}', '{PHONE}'),
 			]]></search>
             <add><![CDATA[
-			array('{ID}', '{DATE}', '{TIME}', '{SUM}', '{PHONE}', '{FIRSTNAME}', '{LASTNAME}'), 
+			array('{ID}', '{DATE}', '{TIME}', '{SUM}', '{PHONE}', '{FIRSTNAME}', '{LASTNAME}', '{PRODUCTS}'), 
 			]]></add>
         </operation>
 		<operation error="log">
@@ -215,7 +214,7 @@
 			array($order_id, date('d.m.Y'), date('H:i'), floatval($order_info['total']), $order_info['telephone']),
 			]]></search>
             <add><![CDATA[
-			array($order_id, date('d.m.Y'), date('H:i'), floatval($order_info['total']), $order_info['telephone'], $order_info['firstname'], $order_info['lastname']),
+			array($order_id, date('d.m.Y'), date('H:i'), floatval($order_info['total']), $order_info['telephone'], $order_info['firstname'], $order_info['lastname'], $products),
 			]]></add>
         </operation>
 		
@@ -224,11 +223,22 @@
 				if ($this->config->get('config_sms_alert')) {
 			]]></search>
             <add><![CDATA[
+			$order_product_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_product WHERE order_id = '" . (int)$order_id . "'");
+			$products = implode(
+				';',
+				array_map(
+					function($item) {
+						return $item['name'];
+					},
+					$order_product_query->rows
+				)
+			);
+				
             if ($this->config->get('config_sms_gatename')
 				AND $this->config->get('config_sms_send_new_order')
 			) {
 				$total = $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value']);
-				
+							
 				$options = array(
 					'to'       => $order_info['telephone'],
 					'from'     => $this->config->get('config_sms_from'),
@@ -243,6 +253,7 @@
 							'{PHONE}',
 							'{FIRSTNAME}',
 							'{LASTNAME}',
+							'{PRODUCTS}',
 						),
 						array(
 							$order_id,
@@ -252,6 +263,7 @@
 							$order_info['telephone'],
 							$order_info['firstname'],
 							$order_info['lastname'],
+							$products,
 						),
 						$this->config->get('config_sms_new_order_message')
 					)
@@ -279,6 +291,15 @@
 							&&*/ isset($message_settings[$order['order_status_id']]['enabled'])
 							&& $message_settings[$order['order_status_id']]['enabled'] == 'on'
 						) {
+							$products = implode(
+								';',
+								array_map(
+									function($item) {
+										return $item['name'];
+									},
+									$this->model_sale_order->getOrderProducts($this->request->get['order_id'])
+								)
+							);
 							
                             $options = array(
                                 'to'       => $order['telephone'],
@@ -296,6 +317,7 @@
 										'{FIRSTNAME}',
 										'{LASTNAME}',
 										'{COMMENT}',
+										'{PRODUCTS}',
                                     ),
                                     array(
                                         $this->request->get['order_id'],
@@ -307,6 +329,7 @@
 										$order['firstname'],
 										$order['lastname'],
 										$this->request->post['comment'],
+										$products,
                                     ),
                                     $message_settings[$order['order_status_id']]['message']
                                 )
@@ -330,11 +353,21 @@
                     ) {
                         $order = $this->model_sale_order->getOrder($this->request->get['order_id']);
                         $message_settings = $this->config->get('config_sms_new_order_status_message');
-						
+							
                         if (/*$order['order_status_id'] != $this->request->post['order_status_id']
 							&&*/ isset($message_settings[ $this->request->post['order_status_id'] ]['enabled'])
 							&& $message_settings[ $this->request->post['order_status_id'] ]['enabled'] == 'on'
 						) {
+							$products = implode(
+								';',
+								array_map(
+									function($item) {
+										return $item['name'];
+									},
+									$this->model_sale_order->getOrderProducts($this->request->get['order_id'])
+								)
+							);
+						
                             $options = array(
                                 'to'       => $order['telephone'],
                                 'from'     => $this->config->get('config_sms_from'),
@@ -351,6 +384,7 @@
 										'{FIRSTNAME}',
 										'{LASTNAME}',
 										'{COMMENT}',
+										'{PRODUCTS}',
                                     ),
                                     array(
                                         $this->request->get['order_id'],
@@ -362,6 +396,7 @@
 										$order['firstname'],
 										$order['lastname'],
 										$this->request->post['comment'],
+										$products,
                                     ),
                                     $message_settings[ $this->request->post['order_status_id'] ]['message']
                                 )
