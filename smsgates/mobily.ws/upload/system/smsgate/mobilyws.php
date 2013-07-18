@@ -16,7 +16,7 @@ final class Mobilyws extends SmsGate {
 		);
 		
 		if (!$this->validateLatin($this->message)) {
-			$params['text'] = $this->hex_chars($this->message);
+			$params['msg'] = $this->hex_chars($this->message);
 		}
 		
 		$ret = $this->request('msgSend.php', $params);

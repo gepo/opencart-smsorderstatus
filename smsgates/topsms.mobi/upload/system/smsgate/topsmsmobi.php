@@ -16,7 +16,7 @@ final class Topsmsmobi extends SmsGate {
 		
 		if (!$this->validateLatin($this->message)) {
 			$params['lang'] = 'ar';
-			$params['text'] = $this->hex_chars($this->message);
+			$params['message'] = $this->hex_chars($this->message);
 		}
 		
 		$ret = $this->request('sendsms.php', $params);
