@@ -419,12 +419,15 @@
 				// Send Admins SMS if configure
 				if ($this->config->get('config_sms_alert')) {
 					$order_product_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_product WHERE order_id = '" . (int)$order_id . "'");
+					if (!function_exists("getproductname")) {
+						function getproductname($item) {
+							return $item['name'];
+						}
+					}
 					$products = implode(
 						';',
 						array_map(
-							function($item) {
-								return $item['name'];
-							},
+							"getproductname", // without lamda function for compatibility with php < 5.3s
 							$order_product_query->rows
 						)
 					);
@@ -455,12 +458,15 @@
 			]]></search>
             <add><![CDATA[
 			$order_product_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_product WHERE order_id = '" . (int)$order_id . "'");
+			if (!function_exists("getproductname")) {
+				function getproductname($item) {
+					return $item['name'];
+				}
+			}
 			$products = implode(
 				';',
 				array_map(
-					function($item) {
-						return $item['name'];
-					},
+					"getproductname", // without lamda function for compatibility with php < 5.3s
 					$order_product_query->rows
 				)
 			);
@@ -522,12 +528,15 @@
 							&&*/ isset($message_settings[$order['order_status_id']]['enabled'])
 							&& $message_settings[$order['order_status_id']]['enabled'] == 'on'
 						) {
+							if (!function_exists("getproductname")) {
+								function getproductname($item) {
+									return $item['name'];
+								}
+							}
 							$products = implode(
 								';',
 								array_map(
-									function($item) {
-										return $item['name'];
-									},
+									"getproductname", // without lamda function for compatibility with php < 5.3s
 									$this->model_sale_order->getOrderProducts($this->request->get['order_id'])
 								)
 							);
@@ -589,12 +598,15 @@
 							&&*/ isset($message_settings[ $this->request->post['order_status_id'] ]['enabled'])
 							&& $message_settings[ $this->request->post['order_status_id'] ]['enabled'] == 'on'
 						) {
+							if (!function_exists("getproductname")) {
+								function getproductname($item) {
+									return $item['name'];
+								}
+							}
 							$products = implode(
 								';',
 								array_map(
-									function($item) {
-										return $item['name'];
-									},
+									"getproductname", // without lamda function for compatibility with php < 5.3s
 									$this->model_sale_order->getOrderProducts($this->request->get['order_id'])
 								)
 							);

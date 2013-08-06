@@ -38,9 +38,10 @@
                     $_['entry_sms_new_order_status_message']    = 'Текст сообщения при изменении статуса заказа:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{STATUS} - новый статус заказа<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{COMMENT} - комментарий к заказу<br/>{PRODUCTS} - список товаров</span><br/>Для включения отправки СМС поставьте флажок напротив нужного статуса и впишите текст.';
 					
 					$_['entry_sms_send_new_order']       = 'Включить SMS уведомление клиента при новом заказе:';
-                    $_['entry_sms_new_order_message']    = 'Текст сообщения при новом заказе:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{PRODUCTS} - список товаров</span>';
+                    $_['entry_sms_new_order_message']    = 'Текст сообщения при новом заказе (для клиента):<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{PRODUCTS} - список товаров</span>';
 					
 					$_['entry_sms_alert']          = 'Включить SMS уведомления администратора:';
+					$_['entry_sms_message']        = 'Текст сообщения при новом заказе (для администритора):';
                 ]]>
             </add>
         </operation>
@@ -59,10 +60,13 @@
             <add>
                 <![CDATA[
                     $_['entry_sms_send_new_order_status']       = 'Turn ON SMS notifications after order status changeed:';
-                    $_['entry_sms_new_order_status_message']    = 'SMS notifications text after order status changed:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{STATUS} - new order status<br/>{COMMENT} - order comment<br/>{PRODUCTS} - order products list</span>';
+                    $_['entry_sms_new_order_status_message']    = 'SMS notification message text after order status changed:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{STATUS} - new order status<br/>{COMMENT} - order comment<br/>{PRODUCTS} - order products list</span>';
 					
 					$_['entry_sms_send_new_order']       = 'Turn ON SMS notifications of client for new order:';
-                    $_['entry_sms_new_order_message']    = 'SMS notifications text for new order:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{PRODUCTS} - order products list</span>';
+                    $_['entry_sms_new_order_message']    = 'SMS notification message text for new order (for client):<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{PRODUCTS} - order products list</span>';
+					
+					$_['entry_sms_alert']          		= 'Enable admin\'s SMS notifications:';
+					$_['entry_sms_message']        		= 'SMS notification message text for new order (for admin):';
                 ]]>
             </add>
         </operation>
@@ -224,12 +228,15 @@
 			]]></search>
             <add><![CDATA[
 			$order_product_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_product WHERE order_id = '" . (int)$order_id . "'");
+			if (!function_exists("getproductname")) {
+				function getproductname($item) {
+					return $item['name'];
+				}
+			}
 			$products = implode(
 				';',
 				array_map(
-					function($item) {
-						return $item['name'];
-					},
+					"getproductname", // without lamda function for compatibility with php < 5.3s
 					$order_product_query->rows
 				)
 			);
@@ -275,6 +282,56 @@
 			]]></add>
         </operation>
 	</file>
+		
+	<file name="catalog/model/account/customer.php">
+		<operation error="log">
+            <search position="before"><![CDATA[
+				if ($this->config->get('config_account_mail')) {
+			]]></search>
+            <add><![CDATA[
+            if ($this->config->get('config_sms_gatename')
+				AND $this->config->get('config_sms_send_new_customer')
+			) {
+				$options = array(
+					'to'       => $this->config->get('config_sms_to'),
+					'from'     => $this->config->get('config_sms_from'),
+					'username' => $this->config->get('config_sms_gate_username'),
+					'password' => $this->config->get('config_sms_gate_password'),
+					'message'  => str_replace(
+						array(
+							'{EMAIL}',
+							'{PHONE}',
+							'{FAX}',
+							'{FIRSTNAME}',
+							'{LASTNAME}',
+							'{COMPANY}',
+							'{ADDRESS_1}',
+							'{ADDRESS_2}',
+							'{CITY}',
+							'{POSTCODE}',
+						),
+						array(
+							$data['email'],
+							$data['telephone'],
+							$data['fax'],
+							$data['firstname'],
+							$data['lastname'],
+							$data['company'],
+							$data['address_1'],
+							$data['address_2'],
+							$data['city'],
+							$data['postcode'],
+						),
+						$this->config->get('config_sms_new_customer_message')
+					)
+				);
+				$this->load->library('sms');
+				$sms = new Sms($this->config->get('config_sms_gatename'), $options);
+				$sms->send();
+			}
+			]]></add>
+        </operation>
+	</file>
 	
     <file name="admin/controller/sale/order.php">
         <operation error="log">
@@ -291,12 +348,15 @@
 							&&*/ isset($message_settings[$order['order_status_id']]['enabled'])
 							&& $message_settings[$order['order_status_id']]['enabled'] == 'on'
 						) {
+							if (!function_exists("getproductname")) {
+								function getproductname($item) {
+									return $item['name'];
+								}
+							}
 							$products = implode(
 								';',
 								array_map(
-									function($item) {
-										return $item['name'];
-									},
+									"getproductname", // without lamda function for compatibility with php < 5.3s
 									$this->model_sale_order->getOrderProducts($this->request->get['order_id'])
 								)
 							);
@@ -358,12 +418,15 @@
 							&&*/ isset($message_settings[ $this->request->post['order_status_id'] ]['enabled'])
 							&& $message_settings[ $this->request->post['order_status_id'] ]['enabled'] == 'on'
 						) {
+							if (!function_exists("getproductname")) {
+								function getproductname($item) {
+									return $item['name'];
+								}
+							}
 							$products = implode(
 								';',
 								array_map(
-									function($item) {
-										return $item['name'];
-									},
+									"getproductname", // without lamda function for compatibility with php < 5.3s
 									$this->model_sale_order->getOrderProducts($this->request->get['order_id'])
 								)
 							);
