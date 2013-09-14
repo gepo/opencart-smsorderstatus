@@ -1,15 +1,15 @@
 <?php
-final class mvaayoo extends SmsGate {
+final class hexcoders extends SmsGate {
 
 	public function send() {
-		$url = "http://api.mVaayoo.com/mvaayooapi/MessageCompose";
+		$url = "http://59.162.167.52/api/MessageCompose";
 		
 		$params = array (
+			'admin' => 'narang.gourav@gmail.com',
 			'user' => $this->username . ':' . $this->password,
 			'senderID' => $this->from,
 			'receipientno' => $this->to,
 			'msgtxt' => $this->message,
-			'state' => 4,
 		);
 
 		$params['receipientno'] = preg_replace("/[^0-9]/", '', $params['receipientno']);
@@ -27,7 +27,7 @@ final class mvaayoo extends SmsGate {
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-			//curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 			$buffer = curl_exec($ch);
 			curl_close($ch);
 		} else {

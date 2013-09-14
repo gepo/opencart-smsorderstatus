@@ -1,44 +1,38 @@
 <?php
-final class Alphasms_com_ua extends SmsGate {
-	private $baseurl = "http://alphasms.com.ua/api/";
+final class Gntext extends SmsGate {
+	private $baseurl = "https://www.textapp.net/webservice/httpservice.aspx";
 	
 	public function send() {
-		$results = array();
-
+		$ret = array();
+		
 		$this->to = preg_replace('/[^0-9+]/', '', $this->to);
 		
-		if (!strncmp($this->to, "+380", 4)) {
-			$this->to = '0' . substr($this->to, 4);
-		}
-		if (!strncmp($this->to, "380", 3)) {
-			$this->to = '0' . substr($this->to, 3);
-		}
-		
-		$data = array(
-			'version'  => 'http',
-			'key'    => $this->username,
-			'command'  => 'send',
-			'from'     => $this->from,
-			'to'       => substr($this->to, 0, 11),
-			'message'      => $this->message
+		$params = array(
+			'externalLogin'	=> $this->username,
+			'password'	=> $this->password,
+			'originator'	=> $this->from,
+			'destinations'	=> $this->to,
+			'text'	=> $this->message
 		);
 
-		$results[] = $this->request('http.php', $data);
-
+		$ret[] = $this->request('sendsms', $params);
+		
 		if ($this->copy) {
 			$numbers = explode(',', $this->copy);
 			foreach ($numbers as $number) {
-				$data['to']     = substr($number, 0, 11);
+				$params['to']     = $number;
 
-				$results[] = $this->process($data);
+				$ret[] = $this->request('sendsms', $params);
 			}
 		}
-
-		return $results;
+		
+		return $ret;
 	}
-	
+   
 	private function request($method, $params) {
-		$url = $this->baseurl . $method;
+		$url = $this->baseurl;
+		
+		$params['method'] = $method;
 		
 		if (function_exists('curl_init')) {
 			$ch = curl_init();
