@@ -1,0 +1,271 @@
+<modification>
+	<id>SMS newsletter</id>
+	<version>0.1</version>
+	<vqmver>2.3</vqmver>
+	<author>Gennady Telegin, support@itxd.ru</author>
+
+	<file name="admin/controller/sale/contact.php">
+	
+		<operation>
+			<search position="after"><![CDATA[
+			$this->data['heading_title']
+			]]>
+			</search>
+			<add><![CDATA[
+			$this->data['text_sms_heading'] = $this->language->get('text_sms_heading');
+			$this->data['text_email_heading'] = $this->language->get('text_email_heading');
+			
+			$this->data['error_sms_text'] = $this->language->get('error_sms_text');
+			$this->data['text_newsletter_email'] = $this->language->get('text_newsletter_email');
+			$this->data['text_newsletter_sms'] = $this->language->get('text_newsletter_sms');
+			
+			$this->data['entry_sms_text'] = $this->language->get('entry_sms_text');
+			
+			$this->data['text_yes'] = $this->language->get('text_yes');
+			$this->data['text_no'] = $this->language->get('text_no');
+			]]>
+			</add>
+		</operation>
+		
+		<operation>
+			<search position="before"><![CDATA[
+			if (!$this->request->post['subject']) {
+			]]>
+			</search>
+			<add><![CDATA[
+			if ($this->request->post['newsletter_email'] == 1) {
+			]]>
+			</add>
+		</operation>
+		
+		<operation>
+			<search position="before"><![CDATA[
+			if (!$json) {
+			]]>
+			</search>
+			<add><![CDATA[
+			} else {
+				if ($this->request->post['newsletter_sms'] == 1) {
+					if (!$this->request->post['newsletter_sms_text']) {
+						$json['error']['sms_text'] = $this->language->get('error_sms_text');
+					}
+				}
+			}
+			]]>
+			</add>
+		</operation>
+		
+		<operation>
+			<search position="after">
+			<![CDATA[$emails[] = $result['email'];]]>
+			</search>
+			<add>
+			<![CDATA[$telephones[] = $result['telephone'];]]>
+			</add>
+		</operation>
+		<operation>
+			<search position="after">
+			<![CDATA[$emails[] = $customer_info['email'];]]>
+			</search>
+			<add>
+			<![CDATA[$telephones[] = $customer_info['telephone'];]]>
+			</add>
+		</operation>
+		<operation>
+			<search position="after">
+			<![CDATA[$emails[] = $affiliate_info['email'];]]>
+			</search>
+			<add>
+			<![CDATA[$telephones[] = $affiliate_info['telephone'];]]>
+			</add>
+		</operation>
+
+		<operation>
+			<search position="before" offset="1">
+			<![CDATA[case 'customer_group':]]>
+			</search>
+			<add>
+			<![CDATA[
+            $query = $this->db->query("SELECT email, telephone FROM " . DB_PREFIX . "order WHERE 1");
+						foreach ($query->rows as $result) {
+							$emails[] = $result['email'];
+							$telephones[] = $result['telephone'];
+						}	
+            	
+            $emails = array_unique($emails); $telephones = array_unique($telephones);
+            $email_total = max(count($emails), count($telephones));
+			]]>
+			</add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[$json['success'] =]]></search>
+			<add><![CDATA[$json['success'] .=]]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[if ($emails) {]]></search>
+			<add>
+				<![CDATA[
+				  $json['success'] = '';
+				  
+				  if($this->request->post['newsletter_sms'] == 1 && $telephones && trim($this->request->post['newsletter_sms_text']) != "") {
+					  $options = array(
+						  'to'       => $this->config->get('config_sms_to'),
+						  'copy'     => implode(",", $telephones),
+						  'from'     => $this->config->get('config_sms_from'),
+						  'username' => $this->config->get('config_sms_gate_username'),
+						  'password' => $this->config->get('config_sms_gate_password'),
+						  'message'  => trim($this->request->post['newsletter_sms_text']),
+					  );
+					  
+					  if(count($telephones) == 1) {
+						  $options['to'] = $telephones['0'];
+						  $options['copy'] = '';
+					  }
+					  
+					  $this->load->library('sms');
+					  $sms = new Sms($this->config->get('config_sms_gatename'), $options);
+					  
+					  $sms->send();
+					  
+					  $json['success'] .= sprintf($this->language->get('text_sms_sent'), count($telephones), count($telephones));
+				  } else
+				  if ($this->request->post['newsletter_email'] == 1 && $emails) {
+				]]>
+			</add>
+		</operation>
+	</file>
+
+	
+	<file name="admin/view/template/sale/contact.tpl">
+		<operation>
+			<search position="before"><![CDATA[<table id="mail" class="form">]]></search>
+			<add><![CDATA[
+			<form id="sendmail">
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search position="after"><![CDATA[</table>]]></search>
+			<add><![CDATA[
+			</form>
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[$('select, input, textarea')]]></search>
+			<add><![CDATA[
+			$('#sendmail').serialize()
+			]]></add>
+		</operation>
+		
+		<operation>
+			<search position="before"><![CDATA[<td><span class="required">*</span> <?php echo $entry_subject; ?></td>]]></search>
+			<add>
+				<![CDATA[
+					<td colspan="2"><h2><?php echo $text_email_heading; ?></h2></td>
+				  </tr>
+				  <tr>
+					<td><?php echo $text_newsletter_email; ?></td>
+					<td>
+						<input type="radio" name="newsletter_email" value="1" checked="checked"><?php echo $text_yes; ?>
+                        <input type="radio" name="newsletter_email" value="0"><?php echo $text_no; ?>
+					</td>
+				  </tr>
+				  <tr>
+				]]>
+			</add>
+		</operation>
+	
+		<operation>
+			<search position="after"><![CDATA[<td><textarea name="message"></textarea></td>]]></search>
+			<add>
+				<![CDATA[
+					</tr>
+				  <tr>
+					<td colspan="2">
+						<h2><?php echo $text_sms_heading; ?></h2>
+					</td>
+				  </tr>
+				  <tr>
+					<td><?php echo $text_newsletter_sms; ?></td>
+					<td>
+					    <input type="radio" name="newsletter_sms" value="1"><?php echo $text_yes; ?>
+                        <input type="radio" name="newsletter_sms" value="0" checked="checked"><?php echo $text_no; ?>
+					</td>
+				  </tr>
+					<tr>
+					  <td><span class="required">*</span> <?php echo $entry_sms_text; ?></td>
+					  <td><textarea name="newsletter_sms_text" cols="70" rows="10" disabled></textarea></td>
+				]]>
+			</add>
+		</operation>
+  	
+		<operation>
+			<search position="before"><![CDATA[<?php echo $footer; ?>]]></search>
+			<add>
+				<![CDATA[
+			<script>
+			function toggleDisabled(elem) {
+				if (elem.attr('disabled')) {
+					elem.removeAttr('disabled');
+				} else {
+					elem.attr('disabled', 'disabled');
+				}
+			}
+			
+			$(document).ready(function() {
+				$('input[name=\'newsletter_email\']').change(function() {
+					toggleDisabled($('[name="subject"]'));
+					toggleDisabled($('[name="message"]'));
+				});
+				
+				$('input[name=\'newsletter_sms\']').change(function() {
+					
+					toggleDisabled($('[name="newsletter_sms_text"]'));
+				});
+			});
+			</script>
+			  ]]>
+			</add>
+		</operation>
+	
+		<operation>
+			<search position="before"><![CDATA[
+			if (json['error']['message']) {
+			]]></search>
+			<add><![CDATA[
+			if (json['error']['sms_text']) {
+				$('textarea[name=\'newsletter_sms_text\']').parent().append('<span class="error">' + json['error']['sms_text'] + '</span>');
+			}
+			]]></add>
+		</operation>
+		
+	</file>
+	
+	<file name="admin/language/russian/sale/contact.php">
+		<operation>
+			<search position="after"><![CDATA[
+			$_['heading_title']
+			]]>
+			</search>
+			<add><![CDATA[
+			$_['heading_title'] = 'Рассылка';
+			
+			$_['text_sms_heading'] = 'SMS';
+			$_['text_email_heading'] = 'Email';
+			
+			$_['error_sms_text'] = 'Необходим текст сообщения!';
+			$_['text_newsletter_email'] = 'Отправить EMail';
+			$_['text_newsletter_sms'] = 'Отправить SMS';
+			
+			$_['entry_sms_text'] = 'Текст смс сообщения';
+			
+			$_['text_sms_sent'] = 'Your SMS message has been successfully sent to %s of %s recipients!';
+			$_['text_sent'] = 'Your Email message has been successfully sent to %s of %s recipients!';
+			]]>
+			</add>
+		</operation>
+	</file>
+</modification>
