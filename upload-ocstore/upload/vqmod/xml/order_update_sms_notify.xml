@@ -59,8 +59,6 @@
             <search position="before"><![CDATA[$_['entry_sms_gatename']]]></search>
             <add>
                 <![CDATA[
-					$_['entry_sms_translit']       = 'Turn ON SMS notifications after order status changeed:';
-					
                     $_['entry_sms_send_new_order_status']       = 'Turn ON SMS notifications after order status changeed:';
                     $_['entry_sms_new_order_status_message']    = 'SMS notification message text after order status changed:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{STATUS} - new order status<br/>{COMMENT} - order comment<br/>{PRODUCTS} - order products list</span>';
 					
@@ -79,9 +77,6 @@
             <search position="before"><![CDATA[$this->data['entry_sms_gatename'] = $this->language->get('entry_sms_gatename');]]></search>
             <add>
                 <![CDATA[
-					$this->data['entry_sms_translit']
-                        = $this->language->get('entry_sms_translit');
-						
                     $this->data['entry_sms_send_new_order_status']
                         = $this->language->get('entry_sms_send_new_order_status');
                     $this->data['entry_sms_new_order_status_message']
@@ -102,14 +97,6 @@
             <search position="before"><![CDATA[if (isset($this->request->post['config_sms_alert'])) {]]></search>
             <add>
                 <![CDATA[
-					if (isset($this->request->post['config_sms_translit'])) {
-                        $this->data['config_sms_translit']
-                            = $this->request->post['config_sms_translit'];
-                    } else {
-                        $this->data['config_sms_translit']
-                            = $this->config->get('config_sms_translit');
-                    }
-					
                     if (isset($this->request->post['config_sms_send_new_order_status'])) {
                         $this->data['config_sms_send_new_order_status']
                             = $this->request->post['config_sms_send_new_order_status'];
@@ -151,20 +138,6 @@
             <search position="after"><![CDATA[<td><textarea name="config_sms_message" cols="40" rows="5"><?php echo $config_sms_message; ?></textarea></td>]]></search>
             <add>
                 <![CDATA[
-                    </tr>
-					<tr>
-                      <td><?php echo $entry_sms_translit; ?></td>
-                      <td><?php if ($config_sms_translit) { ?>
-                        <input type="radio" name="config_sms_translit" value="1" checked="checked" />
-                        <?php echo $text_yes; ?>
-                        <input type="radio" name="config_sms_translit" value="0" />
-                        <?php echo $text_no; ?>
-                        <?php } else { ?>
-                        <input type="radio" name="config_sms_translit" value="1" />
-                        <?php echo $text_yes; ?>
-                        <input type="radio" name="config_sms_translit" value="0" checked="checked" />
-                        <?php echo $text_no; ?>
-                        <?php } ?></td>
                     </tr>
                     <tr>
                       <td><?php echo $entry_sms_send_new_order; ?></td>
@@ -232,6 +205,7 @@
     </file>
 
 	<file name="catalog/model/checkout/order.php">
+		<!-- for ocStore -->
 		<operation error="log">
             <search position="replace"><![CDATA[
 			array('{ID}', '{DATE}', '{TIME}', '{SUM}', '{PHONE}'),
