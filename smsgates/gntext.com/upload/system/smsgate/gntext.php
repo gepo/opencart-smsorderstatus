@@ -12,7 +12,8 @@ final class Gntext extends SmsGate {
 			'password'	=> $this->password,
 			'originator'	=> $this->from,
 			'destinations'	=> $this->to,
-			'text'	=> $this->message
+      'body'	=> $this->message
+			//'text'	=> $this->message
 		);
 
 		$ret[] = $this->request('sendsms', $params);

@@ -23,6 +23,7 @@ final class Clickatell extends SmsGate {
 				'to' => $this->to,
 				'text' => $text,
 				'from' => $this->from,
+				'concat' => 3
 			);
 			
 			if (!$this->validateLatin($text)) {
@@ -36,7 +37,7 @@ final class Clickatell extends SmsGate {
 			if ($send[0] == "ID") {
 				return "successnmessage ID: ". $send[1];
 			} else {
-				return "send message failed";
+				return "send message failed (" . $ret . ")";
 			}
 		} else {
 			return "Authentication failure: ". $ret[0];

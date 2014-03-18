@@ -12,6 +12,15 @@ final class Comtube extends SmsGate {
 			'message' => $this->message
 		);
 		
+		$params['number'] = preg_replace("/[^0-9+]/", '', $params['number']);
+		
+		if ($this->copy) {
+			$numbers = explode(',', $this->copy);
+			foreach ($numbers as $number) {
+				$params['number'] .= ',' . preg_replace("/[^0-9+]/", '', $number);
+			}
+		}
+		
 		$ret = $this->request('send', $params);
 		
 		return $ret;

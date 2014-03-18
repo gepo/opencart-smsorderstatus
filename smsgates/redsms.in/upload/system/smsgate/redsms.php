@@ -1,18 +1,17 @@
 <?php
 final class Redsms extends SmsGate {
-	private $baseurl = "http://bulk.redsms.in/api/";
+	private $baseurl = "http://login.redsms.in/API/";
 	
 	public function send() {
 		$api_id = $this->api_key;
 
 		$params = array (
 			'user' => $this->username,
-			'pass' => $this->password,
+			'password' => $this->password,
 			'phone' => $this->to,
-			'sender' => $this->from,
+			'senderid' => $this->from,
 			'text' => $this->message,
-			'priority' => 'ndnd',
-			'stype' => 'normal',
+			'type' => 't',
 			
 		);
 		
@@ -20,32 +19,24 @@ final class Redsms extends SmsGate {
 			$params['text'] = $this->hex_chars($this->message);
 		}
 		
-		$ret = $this->request('sendmsg.php', $params);
+		$ret = $this->request('SendMessage.ashx', $params);
 		
 		return $ret;
 	}
 	
 	private function request($method, $params) {
-		$url = $this->baseurl . $method;
+		$url = $this->baseurl . $method . '?' . http_build_query($params);
 		
 		if (function_exists('curl_init')) {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+			//curl_setopt($ch, CURLOPT_POST, 1);
+			//curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
 			$buffer = curl_exec($ch);
 			curl_close($ch);
 		} else {
-			$context = stream_context_create(array(
-                'http' => array(
-                    'method' => 'POST',
-                    'header' => "Content-type: application/x-www-form-urlencoded\r\n",
-                    'content' => $params,
-                    'timeout' => 10,
-                ),
-            ));
-            $buffer = file_get_contents($url, false, $context);
+			$buffer = file_get_contents($url, false, $context);
 		}
 		
 		return $buffer;

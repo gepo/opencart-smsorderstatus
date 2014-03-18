@@ -30,7 +30,7 @@ final class Alphasms_com_ua extends SmsGate {
 			foreach ($numbers as $number) {
 				$data['to']     = substr($number, 0, 11);
 
-				$results[] = $this->process($data);
+				$results[] = $this->request('http.php', $data);
 			}
 		}
 

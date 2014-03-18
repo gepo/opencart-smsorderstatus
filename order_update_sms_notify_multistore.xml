@@ -1,0 +1,393 @@
+<modification>
+    <id>Order Update SMS sending</id>
+    <version>1.0.0</version>
+    <vqmver>2.1.0</vqmver>
+    <author>Gennady Telegin, support@itxd.ru</author>
+
+    <file name="admin/language/russian/setting/store.php" error="skip">
+		<!-- {{{ -->
+		<operation>
+            <search position="after"><![CDATA[
+				$_['heading_title']
+			]]></search>
+            <add><![CDATA[
+				$_['entry_sms_gatename']       = 'Сервис отправки SMS:';
+				$_['entry_sms_to']             = 'Номер телефона получателя:<br/><span class="help">В международном формате, только цифры 7926xxxxxxx</span>';
+				$_['entry_sms_from']           = 'Псевдоним отправителя:<br/><span class="help">Не более 11 символов, либо номер телефона до 15 цифр</span>';
+				$_['entry_sms_message']        = 'Текст сообщения:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{COMMENT}<br/>{SHIPPING_CITY}<br/>{SHIPPING_POSTCODE}<br/>{SHIPPING_COUNTRY}<br/>{SHIPPING_COMPANY}<br/>{PRODUCTS} - список товаров<br/>{PHONE} - телефон клиента</span>';
+				$_['entry_sms_gate_username']  = 'Логин на SMS шлюз:';
+				$_['entry_sms_gate_password']  = 'Пароль на SMS шлюз:';
+				$_['entry_sms_alert']          = 'Включить SMS уведомления:';
+				$_['entry_sms_copy']           = 'Дополнительные номера:<br/><span class="help">Указывать через запятую, в международном формате, без разделителей 7926xxxxxxx</span>';
+            ]]></add>
+        </operation>
+		<!-- }}} -->
+		
+        <operation error="log">
+            <search position="before"><![CDATA[
+				$_['entry_sms_gatename']
+			]]></search>
+            <add><![CDATA[
+				$_['entry_sms_send_new_order_status']       = 'Включить SMS уведомления при изменении статуса заказа:';
+				$_['entry_sms_new_order_status_message']    = 'Текст сообщения при изменении статуса заказа:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{STATUS} - новый статус заказа<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{COMMENT} - комментарий к заказу<br/>{SHIPPING_CITY}<br/>{SHIPPING_POSTCODE}<br/>{SHIPPING_COUNTRY}<br/>{SHIPPING_COMPANY}<br/>{PRODUCTS} - список товаров</span><br/>Для включения отправки СМС поставьте флажок напротив нужного статуса и впишите текст.';
+				
+				$_['entry_sms_send_new_order']       = 'Включить SMS уведомление клиента при новом заказе:';
+				$_['entry_sms_new_order_message']    = 'Текст сообщения при новом заказе:<br/><span class="help">Можно использовать теги:<br/>{ID} - номер заказа<br/>{DATE} - дата заказа<br/>{TIME} - время заказа<br/>{SUM} - сумма заказа<br/>{PHONE} - телефон клиента<br/>{FIRSTNAME} - имя клиента<br/>{LASTNAME} - фамилия клиента<br/>{COMMENT} - комментарий к заказу<br/>{SHIPPING_CITY}<br/>{SHIPPING_POSTCODE}<br/>{SHIPPING_COUNTRY}<br/>{SHIPPING_COMPANY}<br/>{PRODUCTS} - список товаров</span>';
+            ]]></add>
+        </operation>
+    </file>
+
+    <file name="admin/language/english/setting/store.php">
+		<!-- {{{ -->
+		<operation>
+            <search position="after"><![CDATA[
+				$_['heading_title']
+			]]></search>
+            <add><![CDATA[
+				$_['entry_sms_gatename']       = 'SMS Gateway:';
+				$_['entry_sms_to']             = 'Admin alert phone number:<br/><span class="help">In international format, only digits 7926xxxxxxx</span>';
+				$_['entry_sms_from']           = 'Sender name:<br/><span class="help">No more than 11 characters length or phone number up to 15 digits length</span>';
+				$_['entry_sms_message']        = 'Admin alert message template:<br/><span class="help">You can use next tags:<br/>{ID} - order id<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order sum<br/>{FIRSTNAME} - client\'s firstname<br/>{LASTNAME} - client\'s lastname<br/>{COMMENT} - order\'s comment<br/>{PRODUCTS} - order products list<br/>{PHONE} - client phone number<br/>{PAYMENT_METHOD}<br/>{SHIPPING_METHOD}<br/>{SHIPPING_ADDRESS_1}<br/>{SHIPPING_ADDRESS_2}<br/>{SHIPPING_CITY}<br/>{SHIPPING_POSTCODE}<br/>{SHIPPING_COUNTRY}<br/>{SHIPPING_COMPANY}<br/>{TOTAL_SUB_SUM} - order sub total<br/>{TOTAL_TAX}<br/>{TOTAL_SHIPPING} - shipping cost<br/>{STORE_NAME}</span>';
+				$_['entry_sms_gate_username']  = 'SMS Gateway Login:';
+				$_['entry_sms_gate_password']  = 'SMS Gateway Password:';
+				$_['entry_sms_alert']          = 'Enable admin SMS alerts:';
+				$_['entry_sms_copy']           = 'Additional alert phone numbers:<br/><span class="help">Comma separated, in internation format, without delimters 7926xxxxxxx</span>';
+            ]]></add>
+        </operation>
+		<!-- }}} -->
+		
+        <operation error="log">
+            <search position="before"><![CDATA[$_['entry_sms_gatename']]]></search>
+            <add><![CDATA[
+                    $_['entry_sms_send_new_order_status']       = 'Turn ON SMS notifications after order status changeed:';
+                    $_['entry_sms_new_order_status_message']    = 'SMS notifications text after order status changed:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{STATUS} - new order status<br/>{FIRSTNAME} - client\'s firstname<br/>{LASTNAME} - client\'s lastname<br/>{COMMENT} - order comment<br/>{PRODUCTS} - order products list<br/>{PAYMENT_METHOD}<br/>{SHIPPING_METHOD}<br/>{SHIPPING_ADDRESS_1}<br/>{SHIPPING_ADDRESS_2}<br/>{SHIPPING_CITY}<br/>{SHIPPING_POSTCODE}<br/>{SHIPPING_COUNTRY}<br/>{SHIPPING_COMPANY}<br/>{TOTAL_SUB_SUM} - order sub total<br/>{TOTAL_TAX}<br/>{TOTAL_SHIPPING} - shipping cost<br/>{STORE_NAME}</span>';
+					
+					$_['entry_sms_send_new_order']       = 'Turn ON SMS notifications of client for new order:';
+                    $_['entry_sms_new_order_message']    = 'SMS notifications text for new order:<br/><span class="help">May use next tags:<br/>{ID} - order number<br/>{DATE} - order date<br/>{TIME} - order time<br/>{SUM} - order total<br/>{PHONE} - client mobile phone<br/>{FIRSTNAME} - client\'s firstname<br/>{LASTNAME} - client\'s lastname<br/>{COMMENT} - order\'s comment<br/>{PRODUCTS} - order products list<br/>{PAYMENT_METHOD}<br/>{SHIPPING_METHOD}<br/>{SHIPPING_ADDRESS_1}<br/>{SHIPPING_ADDRESS_2}<br/>{SHIPPING_CITY}<br/>{SHIPPING_POSTCODE}<br/>{SHIPPING_COUNTRY}<br/>{SHIPPING_COMPANY}<br/>{TOTAL_SUB_SUM} - order sub total<br/>{TOTAL_TAX}<br/>{TOTAL_SHIPPING} - shipping cost<br/>{STORE_NAME}</span>';
+            ]]></add>
+        </operation>
+    </file>
+
+
+    <file name="admin/controller/setting/store.php">
+		<!-- {{{ -->
+		<operation>
+            <search position="after"><![CDATA[
+				$this->data['heading_title']
+			]]></search>
+            <add><![CDATA[
+				$this->data['entry_sms_gatename'] = $this->language->get('entry_sms_gatename');
+				$this->data['entry_sms_to'] = $this->language->get('entry_sms_to');
+				$this->data['entry_sms_from'] = $this->language->get('entry_sms_from');
+				$this->data['entry_sms_message'] = $this->language->get('entry_sms_message');
+				$this->data['entry_sms_gate_username'] = $this->language->get('entry_sms_gate_username');
+				$this->data['entry_sms_gate_password'] = $this->language->get('entry_sms_gate_password');
+				$this->data['entry_sms_alert'] = $this->language->get('entry_sms_alert');
+				$this->data['entry_sms_copy'] = $this->language->get('entry_sms_copy');
+            ]]></add>
+        </operation>
+		
+		<operation>
+            <search position="after"><![CDATA[
+				$this->data['tab_server']
+			]]></search>
+            <add><![CDATA[
+                $this->data['tab_sms'] = $this->language->get('tab_sms');
+
+				$this->data['sms_gatenames'] = array();
+
+				$files = glob(DIR_SYSTEM . 'smsgate/*.php');
+
+				foreach ($files as $file) {
+					$this->data['sms_gatenames'][] =  basename($file, '.php');
+				}
+            ]]></add>
+        </operation>
+		
+		<operation error="log">
+            <search position="before"><![CDATA[
+				if (isset($this->request->post['config_url'])) {
+			]]></search>
+            <add><![CDATA[
+				if (isset($this->request->post['config_sms_gatename'])) {
+					$this->data['config_sms_gatename'] = $this->request->post['config_sms_gatename'];
+				} elseif (isset($store_info['config_sms_gatename'])) {
+					$this->data['config_sms_gatename'] = $store_info['config_sms_gatename'];
+				} else {
+          $this->data['config_sms_gatename'] = '';
+        }
+
+				if (isset($this->request->post['config_sms_to'])) {
+					$this->data['config_sms_to'] = $this->request->post['config_sms_to'];
+				} elseif (isset($store_info['config_sms_to'])) {
+					$this->data['config_sms_to'] = $store_info['config_sms_to'];
+				} else {
+          $this->data['config_sms_to'] = '';
+        }
+
+				if (isset($this->request->post['config_sms_from'])) {
+					$this->data['config_sms_from'] = $this->request->post['config_sms_from'];
+				} elseif (isset($store_info['config_sms_from'])) {
+					$this->data['config_sms_from'] = $store_info['config_sms_from'];
+				} else {
+          $this->data['config_sms_from'] = '';
+        }
+
+				if (isset($this->request->post['config_sms_message'])) {
+					$this->data['config_sms_message'] = $this->request->post['config_sms_message'];
+				} elseif (isset($store_info['config_sms_message'])) {
+					$this->data['config_sms_message'] = $store_info['config_sms_message'];
+				} else {
+          $this->data['config_sms_message'] = '';
+        }
+				
+				if (isset($this->request->post['config_sms_gate_username'])) {
+					$this->data['config_sms_gate_username'] = $this->request->post['config_sms_gate_username'];
+				} elseif (isset($store_info['config_sms_gate_username'])) {
+					$this->data['config_sms_gate_username'] = $store_info['config_sms_gate_username'];
+				} else {
+          $this->data['config_sms_gate_username'] = '';
+        }
+
+				if (isset($this->request->post['config_sms_gate_password'])) {
+					$this->data['config_sms_gate_password'] = $this->request->post['config_sms_gate_password'];
+				} elseif (isset($store_info['config_sms_gate_password'])) {
+					$this->data['config_sms_gate_password'] = $store_info['config_sms_gate_password'];
+				} else {
+          $this->data['config_sms_gate_password'] = '';
+        }
+
+				if (isset($this->request->post['config_sms_alert'])) {
+					$this->data['config_sms_alert'] = $this->request->post['config_sms_alert'];
+				} elseif (isset($store_info['config_sms_alert'])) {
+					$this->data['config_sms_alert'] = $store_info['config_sms_alert'];
+				} else {
+          $this->data['config_sms_alert'] = '';
+        }
+
+				if (isset($this->request->post['config_sms_copy'])) {
+					$this->data['config_sms_copy'] = $this->request->post['config_sms_copy'];
+				} elseif (isset($store_info['config_sms_copy'])) {
+					$this->data['config_sms_copy'] = $store_info['config_sms_copy'];
+				} else {
+          $this->data['config_sms_copy'] = '';
+        }
+            ]]></add>
+        </operation>
+		<!-- ]}} -->
+		
+        <operation error="log">
+            <search position="before"><![CDATA[$this->data['entry_sms_gatename'] = $this->language->get('entry_sms_gatename');]]></search>
+            <add>
+                <![CDATA[
+                    $this->data['entry_sms_send_new_order_status']
+                        = $this->language->get('entry_sms_send_new_order_status');
+                    $this->data['entry_sms_new_order_status_message']
+                        = $this->language->get('entry_sms_new_order_status_message');
+						
+					$this->data['entry_sms_send_new_order']
+                        = $this->language->get('entry_sms_send_new_order');
+                    $this->data['entry_sms_new_order_message']
+                        = $this->language->get('entry_sms_new_order_message');
+						
+					$this->load->model('localisation/order_status');
+					$this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+                ]]>
+            </add>
+        </operation>
+
+        <operation error="log">
+            <search position="before"><![CDATA[if (isset($this->request->post['config_sms_alert'])) {]]></search>
+            <add>
+                <![CDATA[
+                    if (isset($this->request->post['config_sms_send_new_order_status'])) {
+                        $this->data['config_sms_send_new_order_status']
+                            = $this->request->post['config_sms_send_new_order_status'];
+                    } elseif (isset($store_info['config_sms_send_new_order_status'])) {
+                        $this->data['config_sms_send_new_order_status']
+                            = $store_info['config_sms_send_new_order_status'];
+                    } else {
+                      $this->data['config_sms_send_new_order_status'] = '';
+                    }
+
+                    if (isset($this->request->post['config_sms_new_order_status_message'])) {
+                        $this->data['config_sms_new_order_status_message']
+                            = $this->request->post['config_sms_new_order_status_message'];
+                    } elseif (isset($store_info['config_sms_new_order_status_message'])) {
+                        $this->data['config_sms_new_order_status_message']
+                            = (array)$store_info['config_sms_new_order_status_message'];
+                    } else {
+                      $this->data['config_sms_new_order_status_message'] = '';
+                    }
+					
+                    if (isset($this->request->post['config_sms_send_new_order'])) {
+                        $this->data['config_sms_send_new_order']
+                            = $this->request->post['config_sms_send_new_order'];
+                    } elseif (isset($store_info['config_sms_send_new_order'])) {
+                        $this->data['config_sms_send_new_order']
+                            = $store_info['config_sms_send_new_order'];
+                    } else {
+                      $this->data['config_sms_send_new_order'] = '';
+                    }
+					
+                    if (isset($this->request->post['config_sms_new_order_message'])) {
+                        $this->data['config_sms_new_order_message']
+                            = $this->request->post['config_sms_new_order_message'];
+                    } elseif (isset($store_info['config_sms_new_order_message'])) {
+                        $this->data['config_sms_new_order_message']
+                            = $store_info['config_sms_new_order_message'];
+                    } else {
+                      $this->data['config_sms_new_order_message'] = '';
+                    }
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <file name="admin/view/template/setting/store_form.tpl">
+		<!-- {{{ -->
+		<operation>
+            <search position="replace"><![CDATA[<a href="#tab-server">]]></search>
+            <add><![CDATA[<a href="#tab-sms"><?php echo $tab_sms; ?></a><a href="#tab-server">]]></add>
+        </operation>
+		
+		<operation>
+            <search position="before"><![CDATA[<div id="tab-server">]]></search>
+            <add><![CDATA[
+			<div id="tab-sms">
+			  <h2>SMS Gateway</h2>
+			  <table class="form">
+				<tr>
+				  <td><?php echo $entry_sms_gatename; ?></td>
+				  <td>
+					<select name="config_sms_gatename">
+					<?php foreach($sms_gatenames as $sms_gatename) { ?>
+					<?php if ($config_sms_gatename == $sms_gatename) { ?>
+					<option value="<?php echo $sms_gatename; ?>" selected="selected"><?php echo $sms_gatename; ?></option>
+					<?php } else { ?>
+					<option value="<?php echo $sms_gatename; ?>"><?php echo $sms_gatename; ?></option>
+					<?php } ?>
+					<?php } ?>
+					</select>
+				  </td>
+				</tr>
+				<tr>
+				  <td><?php echo $entry_sms_from; ?></td>
+				  <td><input type="text" name="config_sms_from" value="<?php echo $config_sms_from; ?>" maxlength="15" /></td>
+				</tr>
+				<tr>
+				  <td><?php echo $entry_sms_gate_username; ?></td>
+				  <td><input type="text" name="config_sms_gate_username" value="<?php echo $config_sms_gate_username; ?>" /></td>
+				</tr>
+				<tr>
+				  <td><?php echo $entry_sms_gate_password; ?></td>
+				  <td><input type="text" name="config_sms_gate_password" value="<?php echo $config_sms_gate_password; ?>" /></td>
+				</tr>
+			  </table>
+			  <h2>Admin alerts:</h2>
+			  <table class="form">
+				<tr>
+				  <td><?php echo $entry_sms_alert; ?></td>
+				  <td><?php if ($config_sms_alert) { ?>
+					<input type="radio" name="config_sms_alert" value="1" checked="checked" />
+					<?php echo $text_yes; ?>
+					<input type="radio" name="config_sms_alert" value="0" />
+					<?php echo $text_no; ?>
+					<?php } else { ?>
+					<input type="radio" name="config_sms_alert" value="1" />
+					<?php echo $text_yes; ?>
+					<input type="radio" name="config_sms_alert" value="0" checked="checked" />
+					<?php echo $text_no; ?>
+					<?php } ?></td>
+				</tr>
+				<tr>
+				  <td><?php echo $entry_sms_to; ?></td>
+				  <td><input type="text" name="config_sms_to" value="<?php echo $config_sms_to; ?>" maxlength="15" /></td>
+				</tr>
+				<tr>
+				  <td valign="top"><?php echo $entry_sms_copy; ?></td>
+				  <td><textarea name="config_sms_copy" cols="40"><?php echo $config_sms_copy; ?></textarea></td>
+				</tr>
+				<tr>
+				  <td valign="top"><?php echo $entry_sms_message; ?></td>
+				  <td><textarea name="config_sms_message" cols="40" rows="5"><?php echo $config_sms_message; ?></textarea></td>
+				</tr>
+			  </table>
+			</div>
+			]]></add>
+        </operation>
+		<!-- }}} -->
+		
+        <operation error="log">
+            <search position="after"><![CDATA[<td><textarea name="config_sms_message" cols="40" rows="5"><?php echo $config_sms_message; ?></textarea></td>]]></search>
+            <add>
+                <![CDATA[
+                    </tr>
+				  </table>
+				  <h2>Client notification:</h2>
+				  <table class="form">
+                    <tr>
+                      <td><?php echo $entry_sms_send_new_order; ?></td>
+                      <td><?php if ($config_sms_send_new_order) { ?>
+                        <input type="radio" name="config_sms_send_new_order" value="1" checked="checked" />
+                        <?php echo $text_yes; ?>
+                        <input type="radio" name="config_sms_send_new_order" value="0" />
+                        <?php echo $text_no; ?>
+                        <?php } else { ?>
+                        <input type="radio" name="config_sms_send_new_order" value="1" />
+                        <?php echo $text_yes; ?>
+                        <input type="radio" name="config_sms_send_new_order" value="0" checked="checked" />
+                        <?php echo $text_no; ?>
+                        <?php } ?></td>
+                    </tr>
+                    <tr>
+                      <td valign="top"><?php echo $entry_sms_new_order_message; ?></td>
+                      <td><textarea name="config_sms_new_order_message" cols="40" rows="5"><?php echo $config_sms_new_order_message; ?></textarea></td>
+                    </tr>
+					<tr>
+                      <td><?php echo $entry_sms_send_new_order_status; ?></td>
+                      <td><?php if ($config_sms_send_new_order_status) { ?>
+                        <input type="radio" name="config_sms_send_new_order_status" value="1" checked="checked" />
+                        <?php echo $text_yes; ?>
+                        <input type="radio" name="config_sms_send_new_order_status" value="0" />
+                        <?php echo $text_no; ?>
+                        <?php } else { ?>
+                        <input type="radio" name="config_sms_send_new_order_status" value="1" />
+                        <?php echo $text_yes; ?>
+                        <input type="radio" name="config_sms_send_new_order_status" value="0" checked="checked" />
+                        <?php echo $text_no; ?>
+                        <?php } ?></td>
+                    </tr>
+                    <tr>
+                      <td valign="top"><?php echo $entry_sms_new_order_status_message; ?></td>
+                      <td>
+					  
+						<table>
+						<?php foreach ($order_statuses as $order_status): ?>
+						<?php 
+							if (isset($config_sms_new_order_status_message[$order_status['order_status_id']]) === true) {
+								$status_message = $config_sms_new_order_status_message[$order_status['order_status_id']];
+							} else {
+								$status_message = '';
+							}
+						?>
+						<tr>
+							<td>
+								<input type="checkbox" name="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][enabled]" id="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][enabled]"<?php if (isset($status_message['enabled']) && $status_message['enabled']) { echo ' checked="checked"'; }?>/>
+							<td>
+								<label for="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][enabled]"><?php echo $order_status['name']; ?></label>
+							</td>
+							<td>
+								<textarea name="config_sms_new_order_status_message[<?php echo $order_status['order_status_id']; ?>][message]" cols="40" rows="5"><?php echo isset($status_message['message']) ? $status_message['message'] : ""; ?></textarea>
+							</td>
+						</tr>
+						<?php endforeach; ?>
+						</table>
+						
+					  </td>
+                    </tr>
+                ]]>
+            </add>
+        </operation>
+    </file>
+</modification>

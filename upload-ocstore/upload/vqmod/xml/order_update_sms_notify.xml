@@ -52,7 +52,7 @@
     <file name="admin/language/english/setting/setting.php">
         <operation error="log">
             <search position="replace"><![CDATA[{PHONE}]]></search>
-            <add><![CDATA[{FIRSTNAME} - client's firstname<br/>{LASTNAME} - client's lastname<br/>{PRODUCTS} - order products list<br/>{PHONE}]]></add>
+            <add><![CDATA[{FIRSTNAME} - client\'s firstname<br/>{LASTNAME} - client\'s lastname<br/>{PRODUCTS} - order products list<br/>{PHONE}]]></add>
         </operation>
 		
 		<operation error="log">
@@ -347,7 +347,7 @@
 						
                         if (/*$order['order_status_id'] != $this->request->post['order_status_id']
 							&&*/ isset($message_settings[$order['order_status_id']]['enabled'])
-							&& $message_settings[$order['order_status_id']]['enabled'] == 'on'
+							&& $message_settings[$this->request->post['order_status_id']]['enabled'] == 'on'
 						) {
 							if (!function_exists("getproductname")) {
 								function getproductname($item) {
@@ -392,7 +392,7 @@
 										$this->request->post['comment'],
 										$products,
                                     ),
-                                    $message_settings[$order['order_status_id']]['message']
+                                    $message_settings[$this->request->post['order_status_id']]['message']
                                 )
                             );
                             $this->load->library('sms');
@@ -481,7 +481,7 @@
 			$this->smsgate->send();
 			]]></search>
             <add><![CDATA[
-			this->to = preg_replace('/[^0-9+]/', '', $this->to);
+			$this->to = preg_replace('/[^0-9+]/', '', $this->to);
 			]]></add>
         </operation>
 	</file>
